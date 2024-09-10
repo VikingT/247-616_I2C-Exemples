@@ -63,7 +63,12 @@ int interfaceVL6180x_lit(uint16_t Registre, uint8_t *Donnee)
 {
 uint8_t Commande[2];
 	Commande[0] = (uint8_t)(Registre >> 8);
-	Commande[1] = (uint8_t)Registre;
+	Commande[1] = (uint8_t)(Registre & 0xFF);
+	//Commande[1] = (uint8_t)Registre;
+	if (write(fdPortI2C, Commande, 2) != 2) {
+        fprintf(stderr, "Erreur: interfaceVL6180x_lit (Registre: 0x%04X)\n", Registre);
+        return -1;
+    }
 	if (piloteI2C1_litDesOctets(Commande, 2, Donnee, 1) < 0)
 	{
 		printf("erreur: interfaceVL6180x_lit\n");
@@ -111,7 +116,7 @@ int interfaceVL6810x_initialise(void)
 {
 uint8_t index;
 uint8_t valeur;
-	if (piloteI2C1_configureLAdresse(INTERFACEVL6180X_ADRESSE) < 0)
+	if (piloteI2C1_configureLAdresse(fdPortI2C, INTERFACEVL6180X_ADRESSE) < 0)
 	{
 		printf("erreur: interfaceVL6810x_initialise 1\n");
 		return -1;

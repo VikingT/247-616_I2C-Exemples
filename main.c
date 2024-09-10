@@ -5,13 +5,35 @@
 #include <linux/i2c-dev.h> //for IOCTL defs
 #include <fcntl.h>
 
+#include "interfaceVL6180x.h"
+#include "main.h"
 #define I2C_FICHIER "/dev/i2c-2" // fichier Linux representant le BUS #2
-#define I2C_ADRESSE 0x68 // adresse du Device I2C MPU-9250 (motion tracking)
+#define I2C_ADRESSE  0x29  //0x68 // adresse du Device I2C MPU-9250 (motion tracking)
 
 int main()
 {
-	int fdPortI2C;  // file descriptor I2C
+	while(1)
+	{
+	float distance;
 
+	// Initialisation du port I2C
+    fdPortI2C = open(I2C_FICHIER, O_RDWR);
+    if (fdPortI2C == -1) {
+        printf("Erreur: I2C initialisation échouée\n");
+        return -1;
+    }
+
+    if (ioctl(fdPortI2C, I2C_SLAVE_FORCE, I2C_ADRESSE) < 0) {
+        printf("Erreur: I2C initialisation échouée (ioctl)\n");
+        close(fdPortI2C);
+        return -1;
+    }
+    printf("Distance lue: %.2f m\n", distance);
+
+    close(fdPortI2C); // Fermeture du file descriptor
+    return 0;
+	}
+/*
 	// Initialisation du port I2C, 
 	fdPortI2C = open(I2C_FICHIER, O_RDWR); // ouverture du 'fichier', création d'un 'file descriptor' vers le port I2C
 	if(fdPortI2C == -1)
@@ -49,4 +71,5 @@ int main()
 
 	close(fdPortI2C); /// Fermeture du 'file descriptor'
 	return 0;
+	*/
 }

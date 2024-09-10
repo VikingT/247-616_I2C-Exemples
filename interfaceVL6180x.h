@@ -27,5 +27,4 @@
 
 int interfaceVL6180x_litUneDistance(float *Distance);
 int interfaceVL6810x_initialise(void);
-
 #endif
