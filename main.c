@@ -4,6 +4,8 @@
 #include <sys/ioctl.h>
 #include <linux/i2c-dev.h> //for IOCTL defs
 #include <fcntl.h>
+#include <errno.h>
+#include <string.h>
 
 #include "interfaceVL6180x.h"
 #include "main.h"
@@ -49,10 +51,10 @@ int main()
 	}
 	
 	// Écriture et Lecture sur le port I2C
-	uint8_t Source = 0x75; // registre d'ID du chip I2C
-	uint8_t Destination;
-	uint8_t NombreDOctetsALire = 1;
-	uint8_t NombreDOctetsAEcrire = 1;
+	int Source = 0x75; // registre d'ID du chip I2C
+	int Destination;
+	int NombreDOctetsALire = 1;
+	int NombreDOctetsAEcrire = 1;
 
 
 	if(write(fdPortI2C, &Source, NombreDOctetsAEcrire) != NombreDOctetsAEcrire)

@@ -2,6 +2,8 @@
     "files.associations": {
         "i2c-dev.h": "c",
         "main.h": "c",
-        "pilotei2c1.h": "c"
+        "pilotei2c1.h": "c",
+        "string.h": "c",
+        "unistd.h": "c"
     }
 }

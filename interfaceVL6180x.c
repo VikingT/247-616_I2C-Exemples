@@ -1,3 +1,12 @@
+#include <unistd.h>
+#include <stdint.h>
+#include <stdio.h>
+#include <sys/ioctl.h>
+#include <linux/i2c-dev.h> //for IOCTL defs
+#include <fcntl.h>
+#include <errno.h>
+#include <string.h>
+
 #include "main.h"
 #include "piloteI2C1.h"
 #include "interfaceVL6180x.h"
@@ -9,7 +18,7 @@
 typedef struct
 {
 	uint16_t adresse;
-	uint8_t valeur;
+	int valeur;
 } INTERFACEVL6810X_MESSAGE;
 
 #define INTERFACEVL6180X_ADRESSE 0x29 
@@ -45,11 +54,11 @@ INTERFACEVL6810X_MESSAGE interfaceVL6810x_message[INTERFACEVL6180X_NOMBRE] =
 //pas de variables publiques
 
 //fonctions publiques
-int interfaceVL6180x_ecrit(uint16_t Registre, uint8_t Donnee)
+int interfaceVL6180x_ecrit(uint16_t Registre, int Donnee)
 {
-uint8_t message[3];
-	message[0] = (uint8_t)(Registre >> 8);
-	message[1] = (uint8_t)(Registre & 0xFF);
+int message[3];
+	message[0] = (int)(Registre >> 8);
+	message[1] = (int)(Registre & 0xFF);
 	message[2] = Donnee;
 	if (piloteI2C1_ecritDesOctets(message, 3) < 0)
 	{
@@ -59,12 +68,12 @@ uint8_t message[3];
 	return 0;
 }
 
-int interfaceVL6180x_lit(uint16_t Registre, uint8_t *Donnee)
+int interfaceVL6180x_lit(uint16_t Registre, int *Donnee)
 {
-uint8_t Commande[2];
-	Commande[0] = (uint8_t)(Registre >> 8);
-	Commande[1] = (uint8_t)(Registre & 0xFF);
-	//Commande[1] = (uint8_t)Registre;
+int Commande[2];
+	Commande[0] = (int)(Registre >> 8);
+	Commande[1] = (int)(Registre & 0xFF);
+	//Commande[1] = (int)Registre;
 	if (write(fdPortI2C, Commande, 2) != 2) {
         fprintf(stderr, "Erreur: interfaceVL6180x_lit (Registre: 0x%04X)\n", Registre);
         return -1;
@@ -79,7 +88,7 @@ uint8_t Commande[2];
 
 int interfaceVL6180x_litUneDistance(float *Distance)
 {
-uint8_t valeur;
+int valeur;
 	if (interfaceVL6180x_ecrit(0x18, 0x01) < 0)
 	{
 		printf("erreur: interfaceVL6180x_litUneDistance 1\n");
@@ -114,8 +123,8 @@ uint8_t valeur;
 
 int interfaceVL6810x_initialise(void)
 {
-uint8_t index;
-uint8_t valeur;
+int index;
+int valeur;
 	if (piloteI2C1_configureLAdresse(fdPortI2C, INTERFACEVL6180X_ADRESSE) < 0)
 	{
 		printf("erreur: interfaceVL6810x_initialise 1\n");
